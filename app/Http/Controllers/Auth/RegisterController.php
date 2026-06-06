@@ -19,6 +19,19 @@ class RegisterController extends Controller
         ]);
     }
 
+    public function checkUsername(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $username = trim($request->query('username', ''));
+
+        if (strlen($username) < 3 || ! preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+            return response()->json(['available' => false, 'reason' => 'invalid']);
+        }
+
+        $taken = User::where('username', $username)->exists();
+
+        return response()->json(['available' => ! $taken]);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

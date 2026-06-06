@@ -18,7 +18,7 @@ use App\Http\Controllers\SuperAdmin\GroupController as SuperAdminGroupController
 use Illuminate\Support\Facades\Route;
 
 // Public
-Route::get('/', fn () => view('home'))->name('home');
+Route::get('/', fn () => view('home', ['prefillEmail' => request()->query('email', '')]))->name('home');
 
 Route::get('/login', [LoginController::class, 'show'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'login'])->middleware('guest');
@@ -26,6 +26,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/register', [RegisterController::class, 'show'])->name('register')->middleware('guest');
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest');
+Route::get('/username-check', [RegisterController::class, 'checkUsername'])->name('username.check');
 
 // Invite link (public — works for both guests and logged-in users)
 Route::get('/invite/{token}', [InviteController::class, 'show'])->name('invite.show');

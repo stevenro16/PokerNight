@@ -111,7 +111,7 @@
                 </div>
 
                 {{-- RIGHT: Auth card --}}
-                <div class="fi5" style="width:100%;" x-data="{ tab: '{{ $errors->any() && old('_form') === 'register' ? 'register' : 'login' }}' }">
+                <div class="fi5" style="width:100%;" x-data="{ tab: '{{ $errors->any() && old('_form') === 'login' ? 'login' : 'register' }}' }">
 
                     @if(auth()->check())
                     {{-- Logged-in state --}}
@@ -209,7 +209,29 @@
                                 </div>
                             @endif
 
-                            <form method="POST" action="{{ route('register') }}" x-data="{ loading:false }" @submit="loading=true">
+                            <form method="POST" action="{{ route('register') }}"
+                                x-data="{
+                                    loading: false,
+                                    un: '{{ old('username') }}',
+                                    unStatus: '{{ old('username') ? 'checking' : '' }}',
+                                    unTimer: null,
+                                    checkUrl: '{{ route('username.check') }}',
+                                    checkUsername() {
+                                        clearTimeout(this.unTimer);
+                                        const u = this.un.trim();
+                                        if (u.length < 3) { this.unStatus = u.length ? 'short' : ''; return; }
+                                        if (!/^[a-zA-Z0-9_]+$/.test(u)) { this.unStatus = 'invalid'; return; }
+                                        this.unStatus = 'checking';
+                                        this.unTimer = setTimeout(() => {
+                                            fetch(this.checkUrl + '?username=' + encodeURIComponent(u))
+                                                .then(r => r.json())
+                                                .then(d => { this.unStatus = d.available ? 'available' : 'taken'; })
+                                                .catch(() => { this.unStatus = ''; });
+                                        }, 500);
+                                    }
+                                }"
+                                @submit="loading=true"
+                                x-init="un && checkUsername()">
                                 @csrf
                                 <input type="hidden" name="_form" value="register">
 
@@ -217,8 +239,15 @@
                                     <label for="reg_username" style="display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;margin-bottom:0.4rem;">Username</label>
                                     <input id="reg_username" name="username" type="text"
                                         class="input @error('username') border-red-500 @enderror"
-                                        value="{{ old('username') }}"
-                                        placeholder="ace_player" style="width:100%;box-sizing:border-box;">
+                                        x-model="un" @input="checkUsername()"
+                                        placeholder="ace_player" autocomplete="username"
+                                        style="width:100%;box-sizing:border-box;" autofocus>
+                                    {{-- Availability indicator --}}
+                                    <p x-show="unStatus === 'checking'" style="font-size:0.72rem;color:#6b7280;margin-top:0.3rem;" x-cloak>Checking…</p>
+                                    <p x-show="unStatus === 'available'" style="font-size:0.72rem;color:#86efac;margin-top:0.3rem;" x-cloak>✓ Username available</p>
+                                    <p x-show="unStatus === 'taken'" style="font-size:0.72rem;color:#fca5a5;margin-top:0.3rem;" x-cloak>✗ Already taken</p>
+                                    <p x-show="unStatus === 'invalid'" style="font-size:0.72rem;color:#fca5a5;margin-top:0.3rem;" x-cloak>✗ Letters, numbers, and underscores only</p>
+                                    <p x-show="unStatus === 'short'" style="font-size:0.72rem;color:#6b7280;margin-top:0.3rem;" x-cloak>Minimum 3 characters</p>
                                     @error('username')<p class="form-error">{{ $message }}</p>@enderror
                                 </div>
 
@@ -227,25 +256,30 @@
                                     <input id="reg_email" name="email" type="email"
                                         class="input @error('email') border-red-500 @enderror"
                                         value="{{ old('email', $prefillEmail ?? '') }}"
-                                        placeholder="you@example.com" style="width:100%;box-sizing:border-box;">
+                                        placeholder="you@example.com" autocomplete="email"
+                                        style="width:100%;box-sizing:border-box;">
                                     @error('email')<p class="form-error">{{ $message }}</p>@enderror
                                 </div>
 
                                 <div style="margin-bottom:0.875rem;">
-                                    <label for="reg_pw" style="display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;margin-bottom:0.4rem;">Password</label>
+                                    <label for="reg_pw" style="display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;margin-bottom:0.4rem;">Password <span style="color:#4b5563;font-weight:400;text-transform:none;letter-spacing:0;">(min 8 chars)</span></label>
                                     <input id="reg_pw" name="password" type="password"
                                         class="input @error('password') border-red-500 @enderror"
-                                        placeholder="••••••••" style="width:100%;box-sizing:border-box;">
+                                        placeholder="••••••••" autocomplete="new-password"
+                                        style="width:100%;box-sizing:border-box;">
                                     @error('password')<p class="form-error">{{ $message }}</p>@enderror
                                 </div>
 
                                 <div style="margin-bottom:1.5rem;">
                                     <label for="reg_pw2" style="display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;margin-bottom:0.4rem;">Confirm Password</label>
                                     <input id="reg_pw2" name="password_confirmation" type="password"
-                                        class="input" placeholder="••••••••" style="width:100%;box-sizing:border-box;">
+                                        class="input" placeholder="••••••••" autocomplete="new-password"
+                                        style="width:100%;box-sizing:border-box;">
                                 </div>
 
-                                <button type="submit" class="btn btn-gold" style="width:100%;padding:0.7rem;font-size:0.9rem;" :disabled="loading">
+                                <button type="submit" class="btn btn-gold"
+                                    style="width:100%;padding:0.7rem;font-size:0.9rem;"
+                                    :disabled="loading || unStatus === 'taken' || unStatus === 'invalid'">
                                     <span x-show="!loading">Create Account →</span>
                                     <span x-show="loading" x-cloak>Creating…</span>
                                 </button>
