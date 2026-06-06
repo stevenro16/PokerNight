@@ -11,28 +11,30 @@
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     @foreach($groups as $group)
     @php
-        $latest  = $group->pokerNights->first();
-        $images  = $group->pokerNights->map(fn($n) => $n->coverImage?->url())->filter()->values();
+        $latest    = $group->pokerNights->first();
+        $imgUrls   = $group->pokerNights->map(fn($n) => $n->coverImage?->url())->filter()->values()->take(6);
+        $hasImages = $imgUrls->isNotEmpty();
     @endphp
     <a href="{{ route('groups.show', $group) }}"
        class="card overflow-hidden hover:border-yellow-600 transition-colors block group relative h-64"
-       x-data="{ imgs: {{ $images->toJson() }}, idx: 0 }"
-       x-init="if (imgs.length > 1) setInterval(() => idx = (idx + 1) % imgs.length, 3500)">
+       x-data="{ idx: 0 }"
+       x-init="if ({{ $imgUrls->count() }} > 1) setInterval(() => idx = (idx + 1) % {{ $imgUrls->count() }}, 3500)">
 
-        {{-- Cycling images --}}
-        @if($images->isNotEmpty())
-            <template x-for="(img, i) in imgs" :key="i">
-                <img :src="img" alt=""
+        {{-- Images rendered server-side; Alpine controls which is visible --}}
+        @if($hasImages)
+            @foreach($imgUrls as $i => $imgUrl)
+                <img src="{{ $imgUrl }}" alt=""
                      class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-                     :class="i === idx ? 'opacity-100' : 'opacity-0'">
-            </template>
+                     style="{{ $i > 0 ? 'opacity:0' : '' }}"
+                     :class="idx === {{ $i }} ? 'opacity-100' : 'opacity-0'">
+            @endforeach
         @else
             <div class="absolute inset-0 flex items-center justify-center text-6xl" style="background-color: var(--color-felt);">
                 <span class="suit suit-spade opacity-40">♠</span>
             </div>
         @endif
 
-        {{-- Bottom banner: ~half height of old info section, 25% transparent --}}
+        {{-- Bottom banner: 25% see-through overlay --}}
         <div class="absolute bottom-0 left-0 right-0 px-3 py-2"
              style="background-color: rgba(28, 28, 46, 0.75); backdrop-filter: blur(2px);">
             <div class="flex items-center justify-between gap-2">
