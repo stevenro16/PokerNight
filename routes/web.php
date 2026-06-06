@@ -20,11 +20,14 @@ use Illuminate\Support\Facades\Route;
 // Public
 Route::get('/', fn () => view('home', ['prefillEmail' => request()->query('email', '')]))->name('home');
 
-Route::get('/login', [LoginController::class, 'show'])->name('login')->middleware('guest');
+// Login page removed — login form lives on the home page
+// Named route 'login' kept so Laravel's auth middleware redirect works
+Route::get('/login', fn() => redirect()->route('home'))->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'login'])->middleware('guest');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/register', [RegisterController::class, 'show'])->name('register')->middleware('guest');
+// Register page removed — register form lives on the home page
+Route::get('/register', fn() => redirect()->route('home'))->name('register')->middleware('guest');
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest');
 Route::get('/username-check', [RegisterController::class, 'checkUsername'])->name('username.check');
 

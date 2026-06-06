@@ -111,7 +111,7 @@
                 </div>
 
                 {{-- RIGHT: Auth card --}}
-                <div class="fi5" style="width:100%;" x-data="{ tab: '{{ $errors->any() && old('_form') === 'login' ? 'login' : 'register' }}' }">
+                <div class="fi5" style="width:100%;" x-data="{ tab: '{{ $errors->any() && old('_form') === 'register' ? 'register' : 'login' }}' }">
 
                     @if(auth()->check())
                     {{-- Logged-in state --}}
