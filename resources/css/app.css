@@ -1,0 +1,167 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-felt: #1a3a1a;
+    --color-felt-dark: #0f2210;
+    --color-felt-light: #244d24;
+    --color-gold: #c9a227;
+    --color-gold-light: #e8bf45;
+    --color-card-bg: #1c1c2e;
+    --color-surface: #141414;
+    --color-surface-raised: #1e1e2e;
+    --color-border: #2d2d42;
+    --color-muted: #6b7280;
+    --color-danger: #ef4444;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-surface);
+        color: #e5e7eb;
+        font-family: var(--font-sans);
+    }
+
+    *:focus-visible {
+        outline: 2px solid var(--color-gold);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 150ms;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background-color: var(--color-felt);
+        color: var(--color-gold);
+        border-color: var(--color-felt-light);
+    }
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--color-felt-light);
+    }
+
+    .btn-gold {
+        background-color: var(--color-gold);
+        color: #0f2210;
+        border-color: var(--color-gold-light);
+    }
+    .btn-gold:hover:not(:disabled) {
+        background-color: var(--color-gold-light);
+    }
+
+    .btn-ghost {
+        background-color: transparent;
+        color: #9ca3af;
+        border-color: var(--color-border);
+    }
+    .btn-ghost:hover:not(:disabled) {
+        background-color: var(--color-surface-raised);
+        color: #e5e7eb;
+    }
+
+    .btn-danger {
+        background-color: transparent;
+        color: var(--color-danger);
+        border-color: var(--color-danger);
+    }
+    .btn-danger:hover:not(:disabled) {
+        background-color: var(--color-danger);
+        color: white;
+    }
+
+    .input {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        color: #e5e7eb;
+        font-size: 0.875rem;
+        transition: border-color 150ms;
+    }
+    .input:focus {
+        outline: none;
+        border-color: var(--color-gold);
+    }
+    .input::placeholder {
+        color: var(--color-muted);
+    }
+
+    .label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #d1d5db;
+        margin-bottom: 0.375rem;
+    }
+
+    .card {
+        background-color: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 0.75rem;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.625rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .badge-gold {
+        background-color: #78490a;
+        color: var(--color-gold-light);
+    }
+    .badge-green {
+        background-color: #14532d;
+        color: #86efac;
+    }
+    .badge-gray {
+        background-color: #374151;
+        color: #9ca3af;
+    }
+    .badge-red {
+        background-color: #7f1d1d;
+        color: #fca5a5;
+    }
+
+    .form-error {
+        color: #fca5a5;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    .suit {
+        font-family: serif;
+        line-height: 1;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    .suit-spade   { color: #94a3b8; }
+    .suit-heart   { color: #f87171; }
+    .suit-diamond { color: #f87171; }
+    .suit-club    { color: #94a3b8; }
+}

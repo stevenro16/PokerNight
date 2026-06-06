@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Pre-push hook: regenerate deploy/mysql-schema.sql before every push.
+# Install: copy this file to .git/hooks/pre-push and make executable.
+#   cp git-hooks/pre-push .git/hooks/pre-push
+#   chmod +x .git/hooks/pre-push  (Linux/Mac)
+#
+# On Windows with Git Bash the file is already executable as a shell script.
+
+echo "Generating MySQL schema export..."
+php artisan db:export-mysql-schema
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: MySQL schema export failed. Push aborted."
+    exit 1
+fi
+
+# Stage and commit the generated file if it changed
+if ! git diff --quiet deploy/mysql-schema.sql 2>/dev/null; then
+    git add deploy/mysql-schema.sql
+    git commit -m "chore: update mysql schema export [skip ci]" --no-verify
+fi
+
+echo "MySQL schema export complete."
+exit 0

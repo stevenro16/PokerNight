@@ -1,0 +1,20 @@
+I want to create a poker website with all the cool icons, logos poker enjoyer type content with a 
+login portal where a user can create an account to create their 'Poker Group'. Any user can create
+a group and add other users to said group. The group should have a way to track users of the group and
+the poker nights that occur over the course of the year (or a customer time frame they set). This will create
+a bracket system where they can track the attendees of each night, the winner and then put them in a leaderboard 
+based on the winners per recorded game in the group. 
+
+When the user adds a poker night, let them upload files like pictures. Record the date of the game the 
+attendees that were there that night. When someone in a group creates a poker night event, it puts it on 
+the groups calendar.
+
+When the user logs in and goes to their 'groups' The group Card is a Large logo of pictures from that night
+and the winner/details about that poker night in a card to the right fo the image.
+
+Let me know what else you want to know before starting the build.
+
+php8.3 laravel running on apache server. sqlite for dev side and mysql for live. create a sqlite to mysql.sql file during
+git pushes to create any mysql query that needs to be created for it on the live server. 
+There should also be an admin account to manage users and super admin to see any group and take it down if it violtates
+any website rules.
