@@ -51,6 +51,19 @@ class LoginController extends Controller
                     }
                 });
 
+            // Ensure group_members exist for any roster entries already linked to this user
+            GroupPlayer::where('user_id', $user->id)
+                ->each(function ($player) use ($user) {
+                    if (! GroupMember::where('group_id', $player->group_id)->where('user_id', $user->id)->exists()) {
+                        GroupMember::create([
+                            'group_id'  => $player->group_id,
+                            'user_id'   => $user->id,
+                            'role'      => 'MEMBER',
+                            'joined_at' => now(),
+                        ]);
+                    }
+                });
+
             return redirect()->intended(route('dashboard'));
         }
 
