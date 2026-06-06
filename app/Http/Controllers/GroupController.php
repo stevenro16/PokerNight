@@ -14,7 +14,7 @@ class GroupController extends Controller
     {
         $groups = PokerGroup::whereHas('memberships', fn ($q) => $q->where('user_id', Auth::id()))
             ->where('isActive', true)
-            ->with(['memberships', 'pokerNights' => fn ($q) => $q->limit(1)->with('coverImage', 'winner.user')])
+            ->with(['memberships', 'pokerNights' => fn ($q) => $q->limit(8)->with('coverImage', 'winner.user')])
             ->get();
 
         return view('groups.index', compact('groups'));

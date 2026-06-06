@@ -10,31 +10,46 @@
 @if($groups->isNotEmpty())
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     @foreach($groups as $group)
-    <a href="{{ route('groups.show', $group) }}" class="card overflow-hidden hover:border-yellow-600 transition-colors block group">
-        @php $latest = $group->pokerNights->first(); @endphp
-        <div class="h-32 flex items-center justify-center text-5xl" style="background-color: var(--color-felt);">
-            @if($latest?->coverImage)
-                <img src="{{ $latest->coverImage->url() }}" alt="" class="w-full h-full object-cover">
-            @else
+    @php
+        $latest  = $group->pokerNights->first();
+        $images  = $group->pokerNights->map(fn($n) => $n->coverImage?->url())->filter()->values();
+    @endphp
+    <a href="{{ route('groups.show', $group) }}"
+       class="card overflow-hidden hover:border-yellow-600 transition-colors block group relative h-64"
+       x-data="{ imgs: {{ $images->toJson() }}, idx: 0 }"
+       x-init="if (imgs.length > 1) setInterval(() => idx = (idx + 1) % imgs.length, 3500)">
+
+        {{-- Cycling images --}}
+        @if($images->isNotEmpty())
+            <template x-for="(img, i) in imgs" :key="i">
+                <img :src="img" alt=""
+                     class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+                     :class="i === idx ? 'opacity-100' : 'opacity-0'">
+            </template>
+        @else
+            <div class="absolute inset-0 flex items-center justify-center text-6xl" style="background-color: var(--color-felt);">
                 <span class="suit suit-spade opacity-40">♠</span>
-            @endif
-        </div>
-        <div class="p-4">
-            <h3 class="font-bold text-white mb-1 group-hover:text-yellow-400 transition-colors">{{ $group->name }}</h3>
-            <p class="text-gray-400 text-xs mb-3">{{ $group->memberships->count() }} {{ Str::plural('member', $group->memberships->count()) }}</p>
-            @if($latest)
-                <div class="text-xs text-gray-500">Last night: {{ $latest->scheduled_at->format('M j') }}
+            </div>
+        @endif
+
+        {{-- Bottom banner: ~half height of old info section, 25% transparent --}}
+        <div class="absolute bottom-0 left-0 right-0 px-3 py-2"
+             style="background-color: rgba(28, 28, 46, 0.75); backdrop-filter: blur(2px);">
+            <div class="flex items-center justify-between gap-2">
+                <h3 class="font-bold text-white text-sm truncate group-hover:text-yellow-400 transition-colors">{{ $group->name }}</h3>
+                <span class="text-xs font-mono shrink-0 px-1.5 py-0.5 rounded" style="background-color: rgba(20,20,20,0.6); color: var(--color-gold); border: 1px solid var(--color-border);">
+                    {{ $group->invite_code }}
+                </span>
+            </div>
+            <p class="text-gray-300 text-xs mt-0.5">
+                {{ $group->memberships->count() }} {{ Str::plural('member', $group->memberships->count()) }}
+                @if($latest)
+                    · Last: {{ $latest->scheduled_at->format('M j') }}
                     @if($latest->winner)
                         · 🏆 {{ $latest->winner->user->username }}
                     @endif
-                </div>
-            @endif
-            <div class="flex items-center gap-2 mt-3">
-                <span class="text-xs font-mono px-2 py-0.5 rounded" style="background-color: var(--color-surface); color: var(--color-gold); border: 1px solid var(--color-border);">
-                    {{ $group->invite_code }}
-                </span>
-                <span class="text-xs text-gray-500">invite code</span>
-            </div>
+                @endif
+            </p>
         </div>
     </a>
     @endforeach
