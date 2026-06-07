@@ -73,12 +73,13 @@ class PokerNightController extends Controller
             ->first(fn($a) => in_array($a->group_player_id, $myPlayerIds->all()) || $a->user_id === $userId)
             ?->rsvp;
 
-        // Build attended list: previously-placed first (in order), then GOING RSVPs not yet placed
+        // Build attended list: placed first (in order), then GOING RSVPs, then self-reported (no placement, no rsvp)
         $seen = [];
         $attended = [];
         $sources = [
             $night->attendees->whereNotNull('placement')->sortBy('placement'),
             $night->attendees->where('rsvp', 'GOING'),
+            $night->attendees->whereNull('placement')->whereNull('rsvp'),
         ];
         foreach ($sources as $collection) {
             foreach ($collection as $att) {
