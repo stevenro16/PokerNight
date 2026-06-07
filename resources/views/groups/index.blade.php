@@ -40,9 +40,11 @@
              style="background-color: rgba(28, 28, 46, 0.75); backdrop-filter: blur(2px);">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="font-bold text-white text-sm truncate group-hover:text-yellow-400 transition-colors">{{ $group->name }}</h3>
+                @if($group->invite_enabled)
                 <span class="text-xs font-mono shrink-0 px-1.5 py-0.5 rounded" style="background-color: rgba(20,20,20,0.6); color: var(--color-gold); border: 1px solid var(--color-border);">
                     {{ $group->invite_code }}
                 </span>
+                @endif
             </div>
             <p class="text-gray-300 text-xs mt-0.5">
                 {{ $group->memberships->count() }} {{ Str::plural('member', $group->memberships->count()) }}
