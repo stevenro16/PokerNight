@@ -16,7 +16,7 @@
         $hasImages = $imgUrls->isNotEmpty();
     @endphp
     <a href="{{ route('groups.show', $group) }}"
-       class="card overflow-hidden hover:border-yellow-600 transition-colors block group relative h-[19.2rem]"
+       class="card overflow-hidden hover:border-yellow-600 transition-colors block group relative" style="height: 19.2rem"
        x-data="{ idx: 0 }"
        x-init="if ({{ $imgUrls->count() }} > 1) setInterval(() => idx = (idx + 1) % {{ $imgUrls->count() }}, 3500)">
 
