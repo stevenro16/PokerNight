@@ -21,6 +21,7 @@ class PokerGroup extends Model
         'owner_id',
         'invite_code',
         'avatar_path',
+        'invite_enabled',
         'isActive',
     ];
 
@@ -31,7 +32,10 @@ class PokerGroup extends Model
 
     protected function casts(): array
     {
-        return ['isActive' => 'boolean'];
+        return [
+            'isActive'       => 'boolean',
+            'invite_enabled' => 'boolean',
+        ];
     }
 
     protected static function boot(): void

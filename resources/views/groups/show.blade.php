@@ -15,7 +15,11 @@
             <span>·</span>
             <span>{{ $nights->count() }} {{ Str::plural('night', $nights->count()) }}</span>
             <span>·</span>
-            <span>Invite: <span class="font-mono" style="color: var(--color-gold);">{{ $group->invite_code }}</span></span>
+            @if($group->invite_enabled)
+                <span>Invite: <span class="font-mono" style="color: var(--color-gold);">{{ $group->invite_code }}</span></span>
+            @else
+                <span class="text-xs px-1.5 py-0.5 rounded" style="background-color: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171;">Invites disabled</span>
+            @endif
         </div>
     </div>
     <div class="flex gap-2 flex-wrap">

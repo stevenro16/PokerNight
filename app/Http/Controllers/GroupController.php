@@ -88,9 +88,10 @@ class GroupController extends Controller
         $this->authorizeOwner($group);
 
         $data = $request->validate([
-            'name'        => ['required', 'string', 'max:60'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'avatar'      => ['nullable', 'image', 'max:5120'],
+            'name'           => ['required', 'string', 'max:60'],
+            'description'    => ['nullable', 'string', 'max:500'],
+            'avatar'         => ['nullable', 'image', 'max:5120'],
+            'invite_enabled' => ['nullable', 'boolean'],
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -99,9 +100,10 @@ class GroupController extends Controller
         }
 
         $group->update([
-            'name'        => $data['name'],
-            'description' => $data['description'] ?? null,
-            'avatar_path' => $data['avatar_path'] ?? $group->avatar_path,
+            'name'           => $data['name'],
+            'description'    => $data['description'] ?? null,
+            'avatar_path'    => $data['avatar_path'] ?? $group->avatar_path,
+            'invite_enabled' => $request->boolean('invite_enabled'),
         ]);
 
         return redirect()->route('groups.show', $group)->with('success', 'Group updated!');
@@ -110,6 +112,11 @@ class GroupController extends Controller
     public function joinForm(string $code)
     {
         $group = PokerGroup::where('invite_code', strtoupper($code))->where('isActive', true)->firstOrFail();
+
+        if (! $group->invite_enabled) {
+            abort(403, 'Invitations for this group are currently disabled.');
+        }
+
         $alreadyMember = GroupMember::where('group_id', $group->id)->where('user_id', Auth::id())->exists();
 
         return view('groups.join', compact('group', 'alreadyMember'));
@@ -118,6 +125,10 @@ class GroupController extends Controller
     public function join(string $code)
     {
         $group = PokerGroup::where('invite_code', strtoupper($code))->where('isActive', true)->firstOrFail();
+
+        if (! $group->invite_enabled) {
+            abort(403, 'Invitations for this group are currently disabled.');
+        }
 
         $alreadyMember = GroupMember::where('group_id', $group->id)->where('user_id', Auth::id())->exists();
         if ($alreadyMember) {

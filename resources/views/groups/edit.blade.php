@@ -70,6 +70,33 @@
                 @enderror
             </div>
 
+            {{-- Invite code toggle --}}
+            <div class="flex items-center justify-between py-2" style="border-top: 1px solid var(--color-border);">
+                <div>
+                    <div class="text-sm font-medium text-gray-300">Invite Code</div>
+                    <div class="text-xs text-gray-500 mt-0.5">
+                        When off, no one can join using the code
+                        <span class="font-mono" style="color: var(--color-gold);">{{ $group->invite_code }}</span>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer ml-4">
+                    <input type="checkbox" name="invite_enabled" value="1" class="sr-only peer"
+                           {{ $group->invite_enabled ? 'checked' : '' }}>
+                    <div class="w-11 h-6 rounded-full transition-colors"
+                         style="background-color: var(--color-border);">
+                    </div>
+                    <style>
+                        input[name="invite_enabled"]:checked + div { background-color: #c9a227; }
+                        input[name="invite_enabled"] + div::after {
+                            content: ''; position: absolute; top: 2px; left: 2px;
+                            width: 20px; height: 20px; border-radius: 9999px;
+                            background: white; transition: transform 0.2s;
+                        }
+                        input[name="invite_enabled"]:checked + div::after { transform: translateX(20px); }
+                    </style>
+                </label>
+            </div>
+
             <div class="flex gap-3 pt-2">
                 <button type="submit" class="btn btn-gold">Save Changes</button>
                 <a href="{{ route('groups.show', $group) }}" class="btn btn-ghost">Cancel</a>
