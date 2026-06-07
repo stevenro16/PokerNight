@@ -29,7 +29,7 @@
                 {{-- Card-style preview --}}
                 <div style="width:100%; height:180px; border-radius:0.5rem; overflow:hidden; position:relative; background-color:var(--color-felt); border:1px solid var(--color-border);">
                     <template x-if="preview">
-                        <img :src="preview" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+                        <img :src="preview" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;">
                     </template>
                     <template x-if="!preview">
                         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.4;">♠</div>
