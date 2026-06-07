@@ -77,6 +77,36 @@ class GroupController extends Controller
         return view('groups.show', compact('group', 'nights', 'members', 'players'));
     }
 
+    public function edit(PokerGroup $group)
+    {
+        $this->authorizeOwner($group);
+        return view('groups.edit', compact('group'));
+    }
+
+    public function update(Request $request, PokerGroup $group)
+    {
+        $this->authorizeOwner($group);
+
+        $data = $request->validate([
+            'name'        => ['required', 'string', 'max:60'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'avatar'      => ['nullable', 'image', 'max:5120'],
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store("groups/{$group->id}", 'public');
+            $data['avatar_path'] = $path;
+        }
+
+        $group->update([
+            'name'        => $data['name'],
+            'description' => $data['description'] ?? null,
+            'avatar_path' => $data['avatar_path'] ?? $group->avatar_path,
+        ]);
+
+        return redirect()->route('groups.show', $group)->with('success', 'Group updated!');
+    }
+
     public function joinForm(string $code)
     {
         $group = PokerGroup::where('invite_code', strtoupper($code))->where('isActive', true)->firstOrFail();
@@ -121,6 +151,13 @@ class GroupController extends Controller
     {
         $isMember = GroupMember::where('group_id', $group->id)->where('user_id', Auth::id())->exists();
         if (! $isMember && ! Auth::user()->isAdmin()) {
+            abort(403);
+        }
+    }
+
+    private function authorizeOwner(PokerGroup $group): void
+    {
+        if (Auth::id() !== $group->owner_id && ! Auth::user()->isAdmin()) {
             abort(403);
         }
     }

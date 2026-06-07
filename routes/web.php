@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups/join/{code}', [GroupController::class, 'joinForm'])->name('groups.join');
     Route::post('/groups/join/{code}', [GroupController::class, 'join'])->name('groups.join.post');
     Route::get('/groups/{group}', [GroupController::class, 'show'])->name('groups.show');
+    Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])->name('groups.edit');
+    Route::put('/groups/{group}', [GroupController::class, 'update'])->name('groups.update');
 
     // Leaderboard
     Route::get('/groups/{group}/leaderboard', [LeaderboardController::class, 'show'])->name('groups.leaderboard');

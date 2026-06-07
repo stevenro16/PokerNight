@@ -20,8 +20,14 @@ class PokerGroup extends Model
         'description',
         'owner_id',
         'invite_code',
+        'avatar_path',
         'isActive',
     ];
+
+    public function avatarUrl(): ?string
+    {
+        return $this->avatar_path ? asset('storage/' . $this->avatar_path) : null;
+    }
 
     protected function casts(): array
     {

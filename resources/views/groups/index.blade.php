@@ -12,7 +12,8 @@
     @foreach($groups as $group)
     @php
         $latest    = $group->pokerNights->first();
-        $imgUrls   = $group->pokerNights->map(fn($n) => $n->coverImage?->url())->filter()->values()->take(6);
+        $nightImgs = $group->pokerNights->map(fn($n) => $n->coverImage?->url())->filter()->values()->take(5);
+        $imgUrls   = $group->avatarUrl() ? collect([$group->avatarUrl()])->concat($nightImgs) : $nightImgs;
         $hasImages = $imgUrls->isNotEmpty();
     @endphp
     <a href="{{ route('groups.show', $group) }}"

@@ -22,6 +22,7 @@
         <a href="{{ route('groups.leaderboard', $group) }}" class="btn btn-ghost text-sm">🏆 Leaderboard</a>
         @if(auth()->id() === $group->owner_id || auth()->user()->isAdmin())
             <a href="{{ route('players.index', $group) }}" class="btn btn-ghost text-sm">👥 Roster</a>
+            <a href="{{ route('groups.edit', $group) }}" class="btn btn-ghost text-sm">⚙️ Edit Group</a>
         @endif
         <a href="{{ route('nights.create', $group) }}" class="btn btn-gold text-sm">+ Schedule Night</a>
     </div>
