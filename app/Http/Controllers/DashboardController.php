@@ -2,25 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PokerNight;
+use App\Models\PokerGroup;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $groupIds = $user->memberships()->pluck('group_id');
-
-        $recentNights = PokerNight::whereIn('group_id', $groupIds)
-            ->with(['group', 'coverImage', 'winner.groupPlayer', 'winner.user'])
-            ->orderByDesc('scheduled_at')
-            ->limit(5)
+        $groups = PokerGroup::whereHas('memberships', fn ($q) => $q->where('user_id', Auth::id()))
+            ->where('isActive', true)
+            ->with(['memberships', 'pokerNights' => fn ($q) => $q->limit(8)->with('coverImage', 'winner.user')])
             ->get();
 
-        $groupCount = $groupIds->count();
-
-        return view('dashboard', compact('recentNights', 'groupCount'));
+        return view('dashboard', compact('groups'));
     }
 }
