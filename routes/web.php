@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
 
     // Attendees
     Route::post('/groups/{group}/nights/{night}/attendees', [GameAttendeeController::class, 'store'])->name('attendees.store');
+    Route::post('/groups/{group}/nights/{night}/self-attend', [GameAttendeeController::class, 'selfAttend'])->name('attendees.self');
 
     // RSVP
     Route::post('/groups/{group}/nights/{night}/rsvp', [RsvpController::class, 'update'])->name('rsvp.update');

@@ -105,7 +105,12 @@ class PokerNightController extends Controller
                 'initial'   => $p->initial(),
             ])->values()->all();
 
-        return view('groups.nights.show', compact('group', 'night', 'members', 'players', 'myRsvp', 'attended', 'absent'));
+        $myPlayer   = $players->first(fn($p) => $p->user_id === $userId);
+        $myAttendee = $myPlayer
+            ? $night->attendees->first(fn($a) => $a->group_player_id === $myPlayer->id)
+            : null;
+
+        return view('groups.nights.show', compact('group', 'night', 'members', 'players', 'myRsvp', 'attended', 'absent', 'myPlayer', 'myAttendee'));
     }
 
     public function edit(PokerGroup $group, PokerNight $night)

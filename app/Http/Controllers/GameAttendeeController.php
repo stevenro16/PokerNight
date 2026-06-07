@@ -77,4 +77,46 @@ class GameAttendeeController extends Controller
 
         return back()->with('success', 'Results saved!');
     }
+
+    public function selfAttend(Request $request, PokerGroup $group, PokerNight $night)
+    {
+        abort_if($night->group_id !== $group->id, 404);
+
+        $isMember = GroupMember::where('group_id', $group->id)->where('user_id', Auth::id())->exists();
+        if (! $isMember && ! Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        $request->validate(['attended' => ['required', 'in:0,1']]);
+
+        $user   = Auth::user();
+        $player = GroupPlayer::firstOrCreate(
+            ['group_id' => $group->id, 'user_id' => $user->id],
+            ['name' => $user->username, 'role' => 'CORE', 'email' => $user->email]
+        );
+
+        $existing = GameAttendee::where('poker_night_id', $night->id)
+            ->where('group_player_id', $player->id)
+            ->first();
+
+        if ($request->input('attended') === '1') {
+            if (! $existing) {
+                GameAttendee::create([
+                    'poker_night_id'  => $night->id,
+                    'group_player_id' => $player->id,
+                    'user_id'         => $user->id,
+                ]);
+            }
+            return back()->with('success', 'Marked as attended!');
+        } else {
+            if ($existing && is_null($existing->placement)) {
+                $existing->delete();
+                return back()->with('success', 'Removed from attendees.');
+            }
+            if ($existing && ! is_null($existing->placement)) {
+                return back()->with('error', 'Your result was recorded by the group owner and cannot be changed here.');
+            }
+            return back();
+        }
+    }
 }

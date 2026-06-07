@@ -251,6 +251,48 @@
         </div>
         @endif
 
+        {{-- My Attendance (all members) --}}
+        @if($myPlayer)
+        <div class="card p-4">
+            <h3 class="font-semibold text-white mb-1 text-sm">My Attendance</h3>
+            <p class="text-xs text-gray-500 mb-3">Were you at this game?</p>
+
+            @if(session('error'))
+                <p class="text-xs text-red-400 mb-2">{{ session('error') }}</p>
+            @endif
+
+            @php $ownerPlaced = $myAttendee && ! is_null($myAttendee->placement); @endphp
+
+            @if($ownerPlaced)
+                <p class="text-xs mb-3" style="color:var(--color-gold);">
+                    🏆 Recorded as #{{ $myAttendee->placement }} by the group owner.
+                </p>
+            @endif
+
+            <div class="flex gap-2">
+                <form method="POST" action="{{ route('attendees.self', [$group, $night]) }}">
+                    @csrf
+                    <input type="hidden" name="attended" value="1">
+                    <button type="submit"
+                        class="btn text-sm {{ $myAttendee ? 'btn-primary' : 'btn-ghost' }}"
+                        {{ $ownerPlaced ? 'disabled' : '' }}>
+                        ✓ I Was There
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('attendees.self', [$group, $night]) }}">
+                    @csrf
+                    <input type="hidden" name="attended" value="0">
+                    <button type="submit"
+                        class="btn text-sm {{ ! $myAttendee ? 'btn-ghost' : 'btn-ghost' }}"
+                        style="{{ ! $myAttendee ? 'color:#f87171;' : '' }}"
+                        {{ $ownerPlaced ? 'disabled' : '' }}>
+                        ✗ I Wasn't There
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
+
         {{-- Record Results: mark attendance + drag to order --}}
         @if(auth()->id() === $group->owner_id || auth()->user()->isAdmin())
         <div class="card p-4" x-data="attendeeResults({{ Js::from(['attended' => $attended, 'absent' => $absent]) }})">
