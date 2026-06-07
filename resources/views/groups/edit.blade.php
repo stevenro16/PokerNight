@@ -26,28 +26,24 @@
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">Group Icon</label>
 
-                {{-- Current / preview image --}}
-                <div class="flex items-center gap-4 mb-3">
-                    <div class="w-24 h-24 rounded-lg overflow-hidden flex items-center justify-center shrink-0"
-                         style="background-color: var(--color-felt); border: 1px solid var(--color-border);">
-                        <template x-if="preview">
-                            <img :src="preview" class="w-full h-full object-cover">
-                        </template>
-                        <template x-if="!preview">
-                            <span class="text-3xl opacity-40">♠</span>
-                        </template>
-                    </div>
-                    <div class="text-xs text-gray-400">
-                        <p>This image appears on your group card.</p>
-                        <p class="mt-1">Max 5 MB · JPG, PNG, GIF, WebP</p>
-                    </div>
+                {{-- Card-style preview --}}
+                <div style="width:100%; height:180px; border-radius:0.5rem; overflow:hidden; position:relative; background-color:var(--color-felt); border:1px solid var(--color-border);">
+                    <template x-if="preview">
+                        <img :src="preview" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+                    </template>
+                    <template x-if="!preview">
+                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.4;">♠</div>
+                    </template>
                 </div>
 
-                <label class="cursor-pointer inline-block">
-                    <span class="btn btn-ghost text-sm">Choose Image</span>
-                    <input type="file" name="avatar" accept="image/*" class="hidden"
-                           @change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
-                </label>
+                <div class="flex items-center justify-between mt-2">
+                    <label class="cursor-pointer inline-block">
+                        <span class="btn btn-ghost text-sm">Choose Image</span>
+                        <input type="file" name="avatar" accept="image/*" class="hidden"
+                               @change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
+                    </label>
+                    <span class="text-xs text-gray-500">Max 5 MB · JPG, PNG, GIF, WebP</span>
+                </div>
 
                 @error('avatar')
                     <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
