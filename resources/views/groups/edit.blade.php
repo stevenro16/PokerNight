@@ -71,7 +71,8 @@
             </div>
 
             {{-- Invite code toggle --}}
-            <div class="flex items-center justify-between py-2" style="border-top: 1px solid var(--color-border);">
+            <div class="flex items-center justify-between py-2" style="border-top: 1px solid var(--color-border);"
+                 x-data="{ on: {{ $group->invite_enabled ? 'true' : 'false' }} }">
                 <div>
                     <div class="text-sm font-medium text-gray-300">Invite Code</div>
                     <div class="text-xs text-gray-500 mt-0.5">
@@ -79,22 +80,15 @@
                         <span class="font-mono" style="color: var(--color-gold);">{{ $group->invite_code }}</span>
                     </div>
                 </div>
-                <label class="relative inline-flex items-center cursor-pointer ml-4">
-                    <input type="checkbox" name="invite_enabled" value="1" class="sr-only peer"
-                           {{ $group->invite_enabled ? 'checked' : '' }}>
-                    <div class="w-11 h-6 rounded-full transition-colors"
-                         style="background-color: var(--color-border);">
+                <div style="display:flex;align-items:center;gap:8px;margin-left:16px;cursor:pointer;" @click="on = !on">
+                    <span x-text="on ? 'On' : 'Off'" style="font-size:0.75rem;" :style="on ? 'color:#c9a227' : 'color:#6b7280'"></span>
+                    <div style="position:relative;width:44px;height:24px;border-radius:9999px;transition:background-color 0.2s;"
+                         :style="on ? 'background-color:#c9a227' : 'background-color:#374151'">
+                        <div style="position:absolute;top:2px;width:20px;height:20px;border-radius:9999px;background:white;transition:left 0.2s;"
+                             :style="on ? 'left:22px' : 'left:2px'"></div>
                     </div>
-                    <style>
-                        input[name="invite_enabled"]:checked + div { background-color: #c9a227; }
-                        input[name="invite_enabled"] + div::after {
-                            content: ''; position: absolute; top: 2px; left: 2px;
-                            width: 20px; height: 20px; border-radius: 9999px;
-                            background: white; transition: transform 0.2s;
-                        }
-                        input[name="invite_enabled"]:checked + div::after { transform: translateX(20px); }
-                    </style>
-                </label>
+                    <input type="hidden" name="invite_enabled" :value="on ? '1' : '0'">
+                </div>
             </div>
 
             <div class="flex gap-3 pt-2">
